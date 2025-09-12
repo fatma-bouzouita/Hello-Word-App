@@ -47,6 +47,22 @@ jobs:
         run: |
           docker build -t fatmabouzouita/my-app:${{ github.sha }} .
           docker tag fatmabouzouita/my-app:${{ github.sha }} fatmabouzouita/my-app:latest
+    # ---------------------- DEPLOY TO AZURE ----------------------
+  deploy:
+    needs: build  # Démarre après le build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'Webtest'   # 
+          images: 'fatmabouzouita/my-app:latest'
+
 
       - name: Push Docker image
         run: |
